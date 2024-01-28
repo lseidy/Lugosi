@@ -1,0 +1,107 @@
+PARSER_BEGIN(Lugosi)
+import java.io.*;
+public class Lugosi {
+
+  public static void main(String args[]) throws ParseException,IOException {
+    
+ Lugosi analisador = new Lugosi(new FileInputStream(args[0]));
+ analisador.Lugosi();
+  }
+
+}
+
+PARSER_END(Lugosi)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  <MAIN: "main">
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APAR: "(">
+| <FPAR: ")">
+| <VOID: "void">
+| <FLOATCHAVE: "float">
+| <BOOL: "bool">
+| <ELCHAVE: ";">
+| <ATTCHAVE: ":=">
+| <LET: "let">
+| <WHILE: "while">
+| <DO: "do">
+| <IF: "if">
+| <READ: "readIO">
+| <RETURN: "return">
+| <PRINT: "printIO">
+| <SUM: "+">
+| <SUB: "-">
+| <MULT: "*">
+| <DIV: "/">
+| <AND: "&&">
+| <OR: "||">
+| <SYMHIGHER: ">">
+| <SYMLOWER: "<">
+| <EQUAL: "==">
+| <SEP: ",">
+
+}
+
+TOKEN :
+{
+  <TOKEN_NUM : (["0"-"9"])*["."](["0"-"9"])*(["E"](["+"]|["-"])["0"-"9"])*>
+ |<TOKEN_ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])* (["_"]["a"-"z","A"-"Z","0"-"9"])*>
+
+}
+
+
+
+void Lugosi () :
+{Token t;}
+{
+
+(
+  <MAIN> { System.out.println("Palavra reservada: main");}
+| <ACHAVES> { System.out.println("Abre chaves: {");}
+| <FCHAVES> { System.out.println("Fecha chaves: }");}
+| <APAR> { System.out.println("Abre Parenteses: (");}
+| <FPAR> { System.out.println("Fecha Parenteses: )");}
+| <VOID> {System.out.println("Palavra reservada: void");}
+| <FLOATCHAVE> {System.out.println("Palavra reservada: float");}
+| <BOOL> {System.out.println("Palavra reservada: bool");}
+| <PRINT> {System.out.println("Palavra reservada: printIO");}
+| <LET> {System.out.println("Palavra reservada: let");}
+| <DO> {System.out.println("Palavra reservada: do");}
+| <WHILE> {System.out.println("Palavra reservada: while");}
+| <IF> {System.out.println("Palavra reservada: if");}
+| <READ> {System.out.println("Palavra reservada: readIO");}
+| <RETURN> {System.out.println("Palavra reservada: return");}
+| <SUM> {System.out.println("Operador: +");}
+| <SUB> {System.out.println("Operador: -");}
+| <MULT> {System.out.println("Operador: *");}
+| <DIV> {System.out.println("Operador: /");}
+| <AND> {System.out.println("Operador Logico: &&");}
+| <OR> {System.out.println("Operador Logico: ||");}
+| <SYMHIGHER> {System.out.println("Operador Logico: >");}
+| <SYMLOWER> {System.out.println("Operador Logico: <");}
+| <EQUAL> {System.out.println("Operador Logico: ==");}
+| <SEP> {System.out.println("Separador: ,");}
+| <ELCHAVE> {System.out.println("Ponto e Virgula: ;");}
+| <ATTCHAVE> {System.out.println("Atribuicao: :=");}
+| t=<TOKEN_NUM> { System.out.println("Número: "+ t.image);}
+| t=<TOKEN_ID> { System.out.println("Identificador: "+ t.image);}
+)*
+<EOF> 
+
+
+}
+
+
+
+
+
