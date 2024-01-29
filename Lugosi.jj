@@ -36,6 +36,7 @@ TOKEN :
 | <WHILE: "while">
 | <DO: "do">
 | <IF: "if">
+| <DEF: "def">
 | <READ: "readIO">
 | <RETURN: "return">
 | <PRINT: "printIO">
@@ -126,9 +127,37 @@ void Fator() :
 {
   (<TOKEN_ID>) | (<TOKEN_ID> <APAR> (ListExp()?) <FPAR>)
 }
-void () :
+// OP ->  "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "=="
+void Op() :
 {}
 {
+  <SUM> | <SUB> | <MULT> | <DIV> | <AND> | <OR> | <SYMLOWER> | <SYMHIGHER> | <EQUAL>
+  
+}
+
+// LISTAEXP -> EXP | LISTAEXP "," EXP
+void ListExp() :
+{}
+{
+  Exp() | (ListExp() <SEP> Exp())
+}
+
+// FUNC -> FUNC "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
+//| "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
+
+void Func() :
+{}
+{
+  (Func() <DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES>)
+| (<DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES>)
+
+  
+}
+// LISTAARG -> TIPO TOKEN_id | LISTAARG "," TIPO TOKEN_id
+void ListaArg() :
+{}
+{
+ (Type() <TOKEN_ID>) | (ListaArg() <SEP> Type() <TOKEN_ID>)
   
 }
 
