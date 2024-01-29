@@ -60,47 +60,77 @@ TOKEN :
 }
 
 
-
+// LUGOSI -> MAIN FUNC?
 void Lugosi () :
-{Token t;}
+{}
 {
-
-(
-  <MAIN> { System.out.println("Palavra reservada: main");}
-| <ACHAVES> { System.out.println("Abre chaves: {");}
-| <FCHAVES> { System.out.println("Fecha chaves: }");}
-| <APAR> { System.out.println("Abre Parenteses: (");}
-| <FPAR> { System.out.println("Fecha Parenteses: )");}
-| <VOID> {System.out.println("Palavra reservada: void");}
-| <FLOATCHAVE> {System.out.println("Palavra reservada: float");}
-| <BOOL> {System.out.println("Palavra reservada: bool");}
-| <PRINT> {System.out.println("Palavra reservada: printIO");}
-| <LET> {System.out.println("Palavra reservada: let");}
-| <DO> {System.out.println("Palavra reservada: do");}
-| <WHILE> {System.out.println("Palavra reservada: while");}
-| <IF> {System.out.println("Palavra reservada: if");}
-| <READ> {System.out.println("Palavra reservada: readIO");}
-| <RETURN> {System.out.println("Palavra reservada: return");}
-| <SUM> {System.out.println("Operador: +");}
-| <SUB> {System.out.println("Operador: -");}
-| <MULT> {System.out.println("Operador: *");}
-| <DIV> {System.out.println("Operador: /");}
-| <AND> {System.out.println("Operador Logico: &&");}
-| <OR> {System.out.println("Operador Logico: ||");}
-| <SYMHIGHER> {System.out.println("Operador Logico: >");}
-| <SYMLOWER> {System.out.println("Operador Logico: <");}
-| <EQUAL> {System.out.println("Operador Logico: ==");}
-| <SEP> {System.out.println("Separador: ,");}
-| <ELCHAVE> {System.out.println("Ponto e Virgula: ;");}
-| <ATTCHAVE> {System.out.println("Atribuicao: :=");}
-| t=<TOKEN_NUM> { System.out.println("Número: "+ t.image);}
-| t=<TOKEN_ID> { System.out.println("Identificador: "+ t.image);}
-)*
+ Main() (Func())?
 <EOF> 
-
-
 }
 
+// MAIN -> "void" "main" "{" VARDECL SEQCOMANDOS "}"
+void Main () :
+{}
+{
+ <VOID> <MAIN> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> 
+}
+
+// VARDECL -> VARDECL "let" TIPO TOKEN_id ";" | vazio
+
+void Vardecl() :
+{}
+{
+  (Vardecl() <LET> Type() <TOKEN_ID> <ELCHAVE>)?
+}
+
+// TIPO -> "float" | "bool" | "void"
+void Type() :
+{}
+{
+  (<FLOATCHAVE>) | (<BOOL>) | <VOID>
+}
+// SEQCOMANDOS -> SEQCOMANDOS COMANDO | vazio
+void SeqComandos() :
+{}
+{
+  (SeqComandos() Comando())?
+}
+
+// COMANDO -> TOKEN_id ":=" EXP ";"
+// | TOKEN_id "(" LISTAEXP? ")" ";"
+// | "if" EXP "{" SEQCOMANDOS "}" ";"
+// | "while" EXP "do" "{" SEQCOMANDOS "}" ";"
+// | TOKEN_id ":=" "readIO" "(" ")"
+// | "return" EXP ";"
+// | "printIO" EXP ";"
+
+void Comando() :
+{}
+{
+  (<TOKEN_ID> <ATTCHAVE> Exp() <ELCHAVE>) | (<TOKEN_ID> <APAR> (ListExp())? <FPAR> <ELCHAVE>)
+| (<IF> Exp() <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>) | (<WHILE> Exp() <DO> <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE)
+| (<TOKEN_ID> <ATTCHAVE> <READ> <APAR> <FPAR>) | (<RETURN> Exp() <ELCHAVE>) | (<PRINT> Exp() <ELCHAVE)
+  
+}
+
+// EXP -> "(" EXP OP EXP ")" | FATOR
+void Exp() :
+{}
+{
+  (<APAR> Exp() Op() Exp() <FPAR>) | Fator()
+}
+// FATOR -> TOKEN_id | TOKEN_id "(" LISTAEXP? ")"
+// | TOKEN_numliteral | "true" | "false"
+void Fator() :
+{}
+{
+  (<TOKEN_ID>) | (<TOKEN_ID> <APAR> (ListExp()?) <FPAR>)
+}
+void () :
+{}
+{
+  
+}
 
 
 
