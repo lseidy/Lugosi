@@ -77,7 +77,7 @@ void Main () :
 }
 
 // VARDECL -> VARDECL "let" TIPO TOKEN_id ";" | vazio
-
+//TODO RESOLVER RECURSOES A ESQUERDA
 void Vardecl() :
 {}
 {
@@ -90,7 +90,9 @@ void Type() :
 {
   (<FLOATCHAVE>) | (<BOOL>) | <VOID>
 }
+
 // SEQCOMANDOS -> SEQCOMANDOS COMANDO | vazio
+//TODO RESOLVER RECURSOES A ESQUERDA
 void SeqComandos() :
 {}
 {
@@ -109,8 +111,8 @@ void Comando() :
 {}
 {
   (<TOKEN_ID> <ATTCHAVE> Exp() <ELCHAVE>) | (<TOKEN_ID> <APAR> (ListExp())? <FPAR> <ELCHAVE>)
-| (<IF> Exp() <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>) | (<WHILE> Exp() <DO> <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE)
-| (<TOKEN_ID> <ATTCHAVE> <READ> <APAR> <FPAR>) | (<RETURN> Exp() <ELCHAVE>) | (<PRINT> Exp() <ELCHAVE)
+| (<IF> Exp() <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>) | (<WHILE> Exp() <DO> <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>)
+| (<TOKEN_ID> <ATTCHAVE> <READ> <APAR> <FPAR>) | (<RETURN> Exp() <ELCHAVE>) | (<PRINT> Exp() <ELCHAVE>)
   
 }
 
@@ -125,7 +127,7 @@ void Exp() :
 void Fator() :
 {}
 {
-  (<TOKEN_ID>) | (<TOKEN_ID> <APAR> (ListExp()?) <FPAR>)
+  (<TOKEN_ID>) | (<TOKEN_ID> <APAR> (ListExp())? <FPAR>)
 }
 // OP ->  "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "=="
 void Op() :
@@ -136,6 +138,7 @@ void Op() :
 }
 
 // LISTAEXP -> EXP | LISTAEXP "," EXP
+//TODO RESOLVER RECURSOES A ESQUERDA
 void ListExp() :
 {}
 {
@@ -144,7 +147,7 @@ void ListExp() :
 
 // FUNC -> FUNC "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
 //| "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
-
+//TODO RESOLVER RECURSOES A ESQUERDA
 void Func() :
 {}
 {
@@ -154,6 +157,7 @@ void Func() :
   
 }
 // LISTAARG -> TIPO TOKEN_id | LISTAARG "," TIPO TOKEN_id
+//TODO RESOLVER RECURSOES A ESQUERDA
 void ListaArg() :
 {}
 {
