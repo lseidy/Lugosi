@@ -1,0 +1,6 @@
+void main{
+let float teste, id;
+teste := 5.2E+2;
+id := bala_
+printIO teste;
+}
