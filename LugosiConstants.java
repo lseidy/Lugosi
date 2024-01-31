@@ -37,35 +37,41 @@ public interface LugosiConstants {
   /** RegularExpression Id. */
   int IF = 18;
   /** RegularExpression Id. */
-  int READ = 19;
+  int DEF = 19;
   /** RegularExpression Id. */
-  int RETURN = 20;
+  int READ = 20;
   /** RegularExpression Id. */
-  int PRINT = 21;
+  int RETURN = 21;
   /** RegularExpression Id. */
-  int SUM = 22;
+  int PRINT = 22;
   /** RegularExpression Id. */
-  int SUB = 23;
+  int SUM = 23;
   /** RegularExpression Id. */
-  int MULT = 24;
+  int SUB = 24;
   /** RegularExpression Id. */
-  int DIV = 25;
+  int MULT = 25;
   /** RegularExpression Id. */
-  int AND = 26;
+  int DIV = 26;
   /** RegularExpression Id. */
-  int OR = 27;
+  int AND = 27;
   /** RegularExpression Id. */
-  int SYMHIGHER = 28;
+  int OR = 28;
   /** RegularExpression Id. */
-  int SYMLOWER = 29;
+  int SYMHIGHER = 29;
   /** RegularExpression Id. */
-  int EQUAL = 30;
+  int SYMLOWER = 30;
   /** RegularExpression Id. */
-  int SEP = 31;
+  int EQUAL = 31;
   /** RegularExpression Id. */
-  int TOKEN_NUM = 32;
+  int SEP = 32;
   /** RegularExpression Id. */
-  int TOKEN_ID = 33;
+  int TRUE = 33;
+  /** RegularExpression Id. */
+  int FALSE = 34;
+  /** RegularExpression Id. */
+  int TOKEN_NUM = 35;
+  /** RegularExpression Id. */
+  int TOKEN_ID = 36;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -91,6 +97,7 @@ public interface LugosiConstants {
     "\"while\"",
     "\"do\"",
     "\"if\"",
+    "\"def\"",
     "\"readIO\"",
     "\"return\"",
     "\"printIO\"",
@@ -104,6 +111,8 @@ public interface LugosiConstants {
     "\"<\"",
     "\"==\"",
     "\",\"",
+    "\"true\"",
+    "\"false\"",
     "<TOKEN_NUM>",
     "<TOKEN_ID>",
   };

@@ -1,8 +1,9 @@
 void main{
-bool teste;
-float a_, b_c
-teste := a_ && b_c;
-readIO; 
+let bool teste;
+let float a_; 
+let void b_c;
+teste := (a_ && b_c);
+e := readIO() 
 if (teste > a_){
 	printIO(b_c + teste);
 };

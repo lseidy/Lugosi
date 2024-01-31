@@ -50,6 +50,8 @@ TOKEN :
 | <SYMLOWER: "<">
 | <EQUAL: "==">
 | <SEP: ",">
+| <TRUE: "true">
+| <FALSE: "false">
 
 }
 
@@ -57,6 +59,7 @@ TOKEN :
 {
   <TOKEN_NUM : (["0"-"9"])*["."](["0"-"9"])*((["E"])(["+"]|["-"])(["0"-"9"])*)*>
  |<TOKEN_ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])* (["_"])*(["a"-"z","A"-"Z","0"-"9"])*>
+ //|<TOKEN_ID: ["a"-"z","A"-"Z"] (["a"-"z","A"-"Z"] | ["0"-"9"])* (["_"])*(["a"-"z","A"-"Z","0"-"9"])+>
 
 }
 
@@ -114,7 +117,6 @@ void SeqComandos_re() :
   (Comando() SeqComandos_re())?
 }
 
-
 // COMANDO -> TOKEN_id ":=" EXP ";"
 // | TOKEN_id "(" LISTAEXP? ")" ";"
 // | "if" EXP "{" SEQCOMANDOS "}" ";"
@@ -123,15 +125,38 @@ void SeqComandos_re() :
 // | "return" EXP ";"
 // | "printIO" EXP ";"
 
+// TODO FATORACAO
+// COMANDO -> TOKEN_ID COMANDO_FAC |"if" EXP "{" SEQCOMANDOS "}" ";"
+// |"while" EXP "do" "{" SEQCOMANDOS "}" ";" || "return" EXP ";" | | "printIO" EXP ";"
+// COMANDO_FAC -> ":=" EXP ";" | "(" LISTAEXP? ")" ";" | ":=" "readIO" "(" ")"
+
 void Comando() :
 {}
 {
-  (<TOKEN_ID> <ATTCHAVE> Exp() <ELCHAVE>) | (<TOKEN_ID> <APAR> (ListExp())? <FPAR> <ELCHAVE>)
-| (<IF> Exp() <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>) | (<WHILE> Exp() <DO> <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>)
-| (<TOKEN_ID> <ATTCHAVE> <READ> <APAR> <FPAR>) | (<RETURN> Exp() <ELCHAVE>) | (<PRINT> Exp() <ELCHAVE>)
+  <TOKEN_ID>  Comando_Fac() 
+| <IF> Exp() <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>
+| <WHILE> Exp() <DO> <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>
+| <RETURN> Exp() <ELCHAVE>
+| <PRINT> Exp() <ELCHAVE>
+
   
 }
+// TODO FATORACAO
+// ATT -> ":=" ATT_FAC | "("LISTEXP?")" ";"
+// ATT_FAC -> EXP ";" | READ ()
+void Comando_Fac():
+{}
+{
+  <ATTCHAVE> Att()
+| <APAR> (ListExp())? <FPAR> <ELCHAVE>
+}
+void Att():
+{}
+{
+  Exp() <ELCHAVE>
+| <READ> <APAR> <FPAR> 
 
+}
 // EXP -> "(" EXP OP EXP ")" | FATOR
 void Exp() :
 {}
@@ -140,10 +165,19 @@ void Exp() :
 }
 // FATOR -> TOKEN_id | TOKEN_id "(" LISTAEXP? ")"
 // | TOKEN_numliteral | "true" | "false"
+
+// FATOR -> TOKEN_id FATOR_FAC | TOKEN_numliteral | "true" | "false"
+// FATOR_FAC -> "(" LISTAEXP? ")" | vazio
 void Fator() :
 {}
 {
-  (<TOKEN_ID>) | (<TOKEN_ID> <APAR> (ListExp())? <FPAR>)
+  <TOKEN_ID> Fator_Fac()| <TOKEN_NUM> | <TRUE> | <FALSE>
+}
+
+void Fator_Fac():
+{}
+{
+  (<APAR> (ListExp())? <FPAR>)?
 }
 // OP ->  "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "=="
 void Op() :
@@ -160,7 +194,7 @@ void Op() :
 void ListExp() :
 {}
 {
-  (<SEP> Exp() ListExp_re())
+  <SEP> Exp() ListExp_re()
 }
 void ListExp_re() :
 {}
@@ -169,25 +203,38 @@ void ListExp_re() :
 }
  
 // FUNC -> FUNC "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
-//| "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
-//TODO RESOLVER RECURSOES A ESQUERDA
+//| 
+//TODO RESOLVER RECURSOES A ESQUERDA -Feito
 
-// FUNC -> FUNC "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
+// FUNC -> "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" FUNC_RE
+// FUNC_RE -> "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" FUNC_RE | vazio
 void Func() :
 {}
 {
-  (Func() <DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES>)
-| (<DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES>)
-
+  (<DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES>) Func_re()
   
 }
+void Func_re() :
+{}
+{
+  (<DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> Func_re())?
+}
+
 // LISTAARG -> TIPO TOKEN_id | LISTAARG "," TIPO TOKEN_id
 //TODO RESOLVER RECURSOES A ESQUERDA
+//LISTAARG -> TIPO TOKEN_id LISTAARG_RE
+//LISTAARG_RE -> "," TIPO TOKEN_id | vazio
+
 void ListaArg() :
 {}
 {
- (Type() <TOKEN_ID>) | (ListaArg() <SEP> Type() <TOKEN_ID>)
+ (Type() <TOKEN_ID>) ListaArg_re()
   
+}
+void ListaArg_re():
+{}
+{
+  (<SEP> Type() <TOKEN_ID> ListaArg_re())?
 }
 
 
