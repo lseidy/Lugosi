@@ -2,6 +2,6 @@ void main{
 let float teste;
 let float id;
 teste := 5.2E+2;
-id := bala_;
+id := bala_a;
 printIO teste;
 }
