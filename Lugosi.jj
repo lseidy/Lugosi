@@ -77,11 +77,19 @@ void Main () :
 }
 
 // VARDECL -> VARDECL "let" TIPO TOKEN_id ";" | vazio
-//TODO RESOLVER RECURSOES A ESQUERDA
+// recursao a esquerda feito
+// VARDECL -> VARDECLRE
+// VARDECLRE -> "let" TIPO TOKEN_id ";" VARDECLRE | vazio
 void Vardecl() :
 {}
 {
-  (Vardecl() <LET> Type() <TOKEN_ID> <ELCHAVE>)?
+  Vardecl_re()
+}
+
+void Vardecl_re():
+{}
+{
+  (<LET> Type() <TOKEN_ID> <ELCHAVE> Vardecl_re())?
 }
 
 // TIPO -> "float" | "bool" | "void"
@@ -92,12 +100,20 @@ void Type() :
 }
 
 // SEQCOMANDOS -> SEQCOMANDOS COMANDO | vazio
-//TODO RESOLVER RECURSOES A ESQUERDA
+// SEQCOMANDOS -> SEQCOMANDOSRE
+// SEQCOMANDOSRE -> COMANDO SEQCOMANDOSRE | vazio 
+//TODO RESOLVER RECURSOES A ESQUERDA - FEITO
 void SeqComandos() :
 {}
 {
-  (SeqComandos() Comando())?
+  SeqComandos_re()
 }
+void SeqComandos_re() :
+{}
+{
+  (Comando() SeqComandos_re())?
+}
+
 
 // COMANDO -> TOKEN_id ":=" EXP ";"
 // | TOKEN_id "(" LISTAEXP? ")" ";"
@@ -138,16 +154,25 @@ void Op() :
 }
 
 // LISTAEXP -> EXP | LISTAEXP "," EXP
-//TODO RESOLVER RECURSOES A ESQUERDA
+//TODO RESOLVER RECURSOES A ESQUERDA - FEITO
+// LISTAEXP -> "," EXP LISTAEXP_RE
+// LISTAEXP_RE -> EXP LISTAEXP | vazio
 void ListExp() :
 {}
 {
-  Exp() | (ListExp() <SEP> Exp())
+  (<SEP> Exp() ListExp_re())
 }
-
+void ListExp_re() :
+{}
+{
+  (Exp() ListExp_re())? 
+}
+ 
 // FUNC -> FUNC "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
 //| "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
 //TODO RESOLVER RECURSOES A ESQUERDA
+
+// FUNC -> FUNC "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
 void Func() :
 {}
 {
