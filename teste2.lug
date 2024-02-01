@@ -1,6 +1,13 @@
 void main{
-let float teste, id;
-teste := 5.2E+2;
-id := bala_
-printIO teste;
+    let bool bola; let bool agua;
+    teste();
+    
+}
+def void teste(bool bola,bool agua){
+    bola := false;
+    agua := true;
+    if(bola || agua){
+        printIO OK;
+    };
+    return OK;
 }
