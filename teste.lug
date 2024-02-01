@@ -4,4 +4,5 @@ let float id;
 teste := 5.2E+2;
 id := bala_a;
 printIO teste;
+
 }
