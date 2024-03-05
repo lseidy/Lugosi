@@ -1,10 +1,10 @@
 void main{
 let bool teste;
-let float a_; 
+let float a_a; 
 let void b_c;
-teste := (a_ && b_c);
+teste := (a_a && b_c);
 e := readIO() 
-if (teste > a_){
+if (teste > a_a){
 	printIO(b_c + teste);
 };
 }

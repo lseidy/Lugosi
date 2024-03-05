@@ -57,7 +57,7 @@ TOKEN :
 
 TOKEN :
 {
-  <TOKEN_NUM : (["0"-"9"])*["."](["0"-"9"])*((["E"])(["+"]|["-"])(["0"-"9"])*)*>
+  <TOKEN_NUM : (["0"-"9"])+(["."](["0"-"9"])+)?((["E"])(["+"]|["-"])?(["0"-"9"])+)?>
  |<TOKEN_ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])* (["_"] (["a"-"z","A"-"Z","0"-"9"])+)*>
  //|<TOKEN_ID: ["a"-"z","A"-"Z"] (["a"-"z","A"-"Z"] | ["0"-"9"])* (["_"])*(["a"-"z","A"-"Z","0"-"9"])+>
 
@@ -65,34 +65,32 @@ TOKEN :
 
 
 // LUGOSI -> MAIN FUNC?
-void Lugosi () :
-{}
+Prog Lugosi () :
+{Main main; ArrayList<Fun> array=null;}
 {
- Main() (Func())?
+ main=Main() (array=Func())?
+ {return new Prog(main,array);}
 <EOF> 
 }
 
 // MAIN -> "void" "main" "{" VARDECL SEQCOMANDOS "}"
-void Main () :
-{}
+Main Main () :
+{ArrayList<VarDecl> vars=null,ArrayList<Comando> coms=null}
 {
- <VOID> <MAIN> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> 
+ <VOID> <MAIN> <ACHAVES> vars=Vardecl() coms=SeqComandos() <FCHAVES> 
+
+ {return new Main(vars,coms);}
 }
 
 // VARDECL -> VARDECL "let" TIPO TOKEN_id ";" | vazio
 // recursao a esquerda feito
 // VARDECL -> VARDECLRE
 // VARDECLRE -> "let" TIPO TOKEN_id ";" VARDECLRE | vazio
-void Vardecl() :
-{}
+ArrayList<VarDecl> Vardecl() :
+{ArrayList<VarDecl> vars = new ArrayList(), String tipo; Token id;}
 {
-  Vardecl_re()
-}
-
-void Vardecl_re():
-{}
-{
-  (<LET> Type() <TOKEN_ID> <ELCHAVE> Vardecl_re())?
+  (<LET> tipo=Type() id=<TOKEN_ID> <ELCHAVE> { vars.add(new VarDecl(tipo,id.image);})*
+  { return vars;}
 }
 
 // TIPO -> "float" | "bool" | "void"
