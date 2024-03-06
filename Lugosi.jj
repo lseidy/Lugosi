@@ -67,7 +67,7 @@ TOKEN :
 
 // LUGOSI -> MAIN FUNC?
 Prog Lugosi () :
-{Main main; ArrayList<Func> array=null;}
+{Main main; ArrayList<Fun> array=null;}
 {
  main=Main() (array=Func())?
  {return new Prog(main,array);}
@@ -76,7 +76,7 @@ Prog Lugosi () :
 
 // MAIN -> "void" "main" "{" VARDECL SEQCOMANDOS "}"
 Main Main () :
-{ArrayList<VarDecl> vars=null,ArrayList<SeqComandos> coms=null}
+{ArrayList<VarDecl> vars=null;ArrayList<SeqComandos> coms=null;}
 {
  <VOID> <MAIN> <ACHAVES> vars=Vardecl() coms=SeqComandos() <FCHAVES> 
 
@@ -86,9 +86,17 @@ Main Main () :
 // VARDECL -> VARDECLRE
 // VARDECLRE -> "let" TIPO TOKEN_id ";" VARDECLRE | vazio
 ArrayList<VarDecl> Vardecl() :
-{ArrayList<VarDecl> vars = new ArrayList(), String tipo; Token id;}
 {
-  (<LET> tipo=Type() id=<TOKEN_ID> <ELCHAVE> { vars.add(new VarDecl(tipo,id.image));})*
+    ArrayList<VarDecl> vars = new ArrayList(); 
+    String tipo; 
+    Token id;}
+{
+  (
+    <LET> tipo=Type() id=<TOKEN_ID> <ELCHAVE> 
+    { 
+      vars.add(new VarDecl(tipo,id.image));
+    }
+  )*
   { return vars;}
 }
 
@@ -100,10 +108,18 @@ void Type() :
 }
 
 // SEQCOMANDOS -> SEQCOMANDOS COMANDO | vazio
-void SeqComandos(Arraylist<SeqComandos>):
-{Comando c;}
+ArrayList<SeqComandos> SeqComandos():
 {
-  c = (Comando() {SeqComandos.add(c);})*
+  ArrayList<SeqComandos> coms = new ArrayList();
+}
+{
+  (
+    Comando() 
+    { 
+      coms.add(new SeqComandos());
+    }
+  )*
+  {return coms;}
 }
 
 // COMANDO -> TOKEN_id ":=" EXP ";"
