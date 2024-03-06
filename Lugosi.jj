@@ -29,7 +29,7 @@ TOKEN :
 | <APAR: "(">
 | <FPAR: ")">
 | <VOID: "void">
-| <FLOATCHAVE: "float">
+| <FLOAT: "float">
 | <BOOL: "bool">
 | <ELCHAVE: ";">
 | <ATTCHAVE: ":=">
@@ -67,16 +67,19 @@ TOKEN :
 
 // LUGOSI -> MAIN FUNC?
 Prog Lugosi () :
-{Main main; ArrayList<Fun> array=null;}
 {
- main=Main() (array=Func())?
- {return new Prog(main,array);}
+  Main main; 
+  ArrayList<Fun> array=null;}
+{
+  main=Main() (array=Func())?
+  {return new Prog(main,array);}
 <EOF> 
 }
 
 // MAIN -> "void" "main" "{" VARDECL SEQCOMANDOS "}"
 Main Main () :
-{ArrayList<VarDecl> vars=null;ArrayList<SeqComandos> coms=null;}
+{
+  ArrayList<VarDecl> vars=null;ArrayList<SeqComandos> coms=null;}
 {
  <VOID> <MAIN> <ACHAVES> vars=Vardecl() coms=SeqComandos() <FCHAVES> 
 
@@ -101,10 +104,13 @@ ArrayList<VarDecl> Vardecl() :
 }
 
 // TIPO -> "float" | "bool" | "void"
-void Type() :
-{}
+String Type() :
 {
-  (<FLOATCHAVE>) | (<BOOL>) | <VOID>
+  String tipo;
+}
+{
+  tipo = <FLOAT> | <BOOL> | <VOID>
+  {return tipo;}
 }
 
 // SEQCOMANDOS -> SEQCOMANDOS COMANDO | vazio
@@ -121,21 +127,14 @@ ArrayList<SeqComandos> SeqComandos():
   )*
   {return coms;}
 }
-
-// COMANDO -> TOKEN_id ":=" EXP ";"
-// | TOKEN_id "(" LISTAEXP? ")" ";"
-// | "if" EXP "{" SEQCOMANDOS "}" ";"
-// | "while" EXP "do" "{" SEQCOMANDOS "}" ";"
-// | TOKEN_id ":=" "readIO" "(" ")"
-// | "return" EXP ";"
-// | "printIO" EXP ";"
-
 // COMANDO -> TOKEN_ID COMANDO_FAC |"if" EXP "{" SEQCOMANDOS "}" ";"
 // |"while" EXP "do" "{" SEQCOMANDOS "}" ";" || "return" EXP ";" | | "printIO" EXP ";"
 // COMANDO_FAC -> ":=" EXP ";" | "(" LISTAEXP? ")" ";" | ":=" "readIO" "(" ")"
 
-void Comando() :
-{}
+Com Comando() :
+{
+  Token id;
+}
 {
   <TOKEN_ID>  Comando_Fac() 
 | <IF> Exp() <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>
