@@ -1,5 +1,6 @@
 PARSER_BEGIN(Lugosi)
 import java.io.*;
+
 public class Lugosi {
 
   public static void main(String args[]) throws ParseException,IOException {
@@ -66,7 +67,7 @@ TOKEN :
 
 // LUGOSI -> MAIN FUNC?
 Prog Lugosi () :
-{Main main; ArrayList<Fun> array=null;}
+{Main main; ArrayList<Func> array=null;}
 {
  main=Main() (array=Func())?
  {return new Prog(main,array);}
@@ -75,21 +76,19 @@ Prog Lugosi () :
 
 // MAIN -> "void" "main" "{" VARDECL SEQCOMANDOS "}"
 Main Main () :
-{ArrayList<VarDecl> vars=null,ArrayList<Comando> coms=null}
+{ArrayList<VarDecl> vars=null,ArrayList<SeqComandos> coms=null}
 {
  <VOID> <MAIN> <ACHAVES> vars=Vardecl() coms=SeqComandos() <FCHAVES> 
 
  {return new Main(vars,coms);}
 }
 
-// VARDECL -> VARDECL "let" TIPO TOKEN_id ";" | vazio
-// recursao a esquerda feito
 // VARDECL -> VARDECLRE
 // VARDECLRE -> "let" TIPO TOKEN_id ";" VARDECLRE | vazio
 ArrayList<VarDecl> Vardecl() :
 {ArrayList<VarDecl> vars = new ArrayList(), String tipo; Token id;}
 {
-  (<LET> tipo=Type() id=<TOKEN_ID> <ELCHAVE> { vars.add(new VarDecl(tipo,id.image);})*
+  (<LET> tipo=Type() id=<TOKEN_ID> <ELCHAVE> { vars.add(new VarDecl(tipo,id.image));})*
   { return vars;}
 }
 
@@ -101,18 +100,10 @@ void Type() :
 }
 
 // SEQCOMANDOS -> SEQCOMANDOS COMANDO | vazio
-// SEQCOMANDOS -> SEQCOMANDOSRE
-// SEQCOMANDOSRE -> COMANDO SEQCOMANDOSRE | vazio 
-//TODO RESOLVER RECURSOES A ESQUERDA - FEITO
-void SeqComandos() :
-{}
+void SeqComandos(Arraylist<SeqComandos>):
+{Comando c;}
 {
-  SeqComandos_re()
-}
-void SeqComandos_re() :
-{}
-{
-  (Comando() SeqComandos_re())?
+  c = (Comando() {SeqComandos.add(c);})*
 }
 
 // COMANDO -> TOKEN_id ":=" EXP ";"
@@ -123,7 +114,6 @@ void SeqComandos_re() :
 // | "return" EXP ";"
 // | "printIO" EXP ";"
 
-// TODO FATORACAO
 // COMANDO -> TOKEN_ID COMANDO_FAC |"if" EXP "{" SEQCOMANDOS "}" ";"
 // |"while" EXP "do" "{" SEQCOMANDOS "}" ";" || "return" EXP ";" | | "printIO" EXP ";"
 // COMANDO_FAC -> ":=" EXP ";" | "(" LISTAEXP? ")" ";" | ":=" "readIO" "(" ")"
@@ -136,33 +126,31 @@ void Comando() :
 | <WHILE> Exp() <DO> <ACHAVES> SeqComandos() <FCHAVES> <ELCHAVE>
 | <RETURN> Exp() <ELCHAVE>
 | <PRINT> Exp() <ELCHAVE>
-
-  
 }
-// TODO FATORACAO
+
 // ATT -> ":=" ATT_FAC | "("LISTEXP?")" ";"
 // ATT_FAC -> EXP ";" | READ ()
+
 void Comando_Fac():
 {}
 {
   <ATTCHAVE> Att()
 | <APAR> (ListExp())? <FPAR> <ELCHAVE>
 }
+
 void Att():
 {}
 {
   Exp() <ELCHAVE>
 | <READ> <APAR> <FPAR> 
-
 }
+
 // EXP -> "(" EXP OP EXP ")" | FATOR
 void Exp() :
 {}
 {
   (<APAR> Exp() Op() Exp() <FPAR>) | Fator()
 }
-// FATOR -> TOKEN_id | TOKEN_id "(" LISTAEXP? ")"
-// | TOKEN_numliteral | "true" | "false"
 
 // FATOR -> TOKEN_id FATOR_FAC | TOKEN_numliteral | "true" | "false"
 // FATOR_FAC -> "(" LISTAEXP? ")" | vazio
@@ -171,12 +159,12 @@ void Fator() :
 {
   <TOKEN_ID> Fator_Fac()| <TOKEN_NUM> | <TRUE> | <FALSE>
 }
-
 void Fator_Fac():
 {}
 {
   (<APAR> (ListExp())? <FPAR>)?
 }
+
 // OP ->  "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "=="
 void Op() :
 {}
@@ -189,33 +177,20 @@ void Op() :
 //TODO RESOLVER RECURSOES A ESQUERDA - FEITO
 // LISTAEXP -> "," EXP LISTAEXP_RE
 // LISTAEXP_RE -> EXP LISTAEXP | vazio
-void ListExp() :
+
+void ListaExp()
 {}
 {
-  <SEP> Exp() ListExp_re()
-}
-void ListExp_re() :
-{}
-{
-  (Exp() ListExp_re())? 
+  Exp() (<SEP> Exp())* 
 }
  
-// FUNC -> FUNC "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}"
-//| 
-//TODO RESOLVER RECURSOES A ESQUERDA -Feito
-
 // FUNC -> "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" FUNC_RE
 // FUNC_RE -> "def" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" FUNC_RE | vazio
+
 void Func() :
 {}
 {
-  (<DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES>) Func_re()
-  
-}
-void Func_re() :
-{}
-{
-  (<DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES> Func_re())?
+  (<DEF> Type() <TOKEN_ID> <APAR> (ListaArg())? <FPAR> <ACHAVES> Vardecl() SeqComandos() <FCHAVES>)+ 
 }
 
 // LISTAARG -> TIPO TOKEN_id | LISTAARG "," TIPO TOKEN_id
@@ -226,15 +201,5 @@ void Func_re() :
 void ListaArg() :
 {}
 {
- (Type() <TOKEN_ID>) ListaArg_re()
-  
+ Type() <TOKEN_ID> (<SEP> Type() <TOKEN_ID>)*
 }
-void ListaArg_re():
-{}
-{
-  (<SEP> Type() <TOKEN_ID> ListaArg_re())?
-}
-
-
-
-
